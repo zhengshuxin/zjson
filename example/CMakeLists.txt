@@ -61,12 +61,9 @@ if (${UNIX_OS})
 		"-Waggregate-return"
 		"-Wmissing-prototypes"
 		"-D_REENTRANT"
-		"-D_USE_FAST_MACRO"
-		"-DACL_WRITEABLE_CHECK"
 		"-Wno-long-long"
 		"-Wuninitialized"
 		"-D_POSIX_PTHREAD_SEMANTICS"
-		"-DACL_PREPARE_COMPILE"
 		"-Wstrict-prototypes"
 	)
 

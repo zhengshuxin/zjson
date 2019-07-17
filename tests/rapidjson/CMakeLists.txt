@@ -5,6 +5,8 @@ cmake_minimum_required(VERSION 2.8)
 
 #message(project_dir=${PROJECT_SOURCE_DIR})
 
+#project(test)
+
 if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
 	message(FATAL_ERROR "Please into another dir to build!")
 endif()
@@ -32,13 +34,11 @@ include_directories(
 	${CMAKE_CURRENT_SOURCE_DIR}/include
 )
 
-set(src ${CMAKE_CURRENT_SOURCE_DIR}/src)
-set(sources
-	${src}
-)
+set(src ${CMAKE_CURRENT_SOURCE_DIR})
+set(sources ${src})
 
 foreach(iter ${sources})
-	aux_source_directory(${iter} lib_src)
+	aux_source_directory(${iter} src)
 endforeach()
 
 ##############################################################################
@@ -58,13 +58,11 @@ if (${UNIX_OS})
 		"-Werror"
 		"-Wshadow"
 		"-Wpointer-arith"
-		"-Waggregate-return"
-		"-Wmissing-prototypes"
 		"-D_REENTRANT"
 		"-Wno-long-long"
 		"-Wuninitialized"
 		"-D_POSIX_PTHREAD_SEMANTICS"
-		"-Wstrict-prototypes"
+		"-std=c++11"
 	)
 
 	if (CMAKE_COMPILER_IS_GNUCC)
@@ -78,7 +76,6 @@ if (${UNIX_OS})
 			if ((GCC_MAJOR GREATER_EQUAL 4) AND (GCC_MINOR GREATER_EQUAL 8))
 				message(STATUS "gcc version major=${GCC_MAJOR}")
 				message(STATUS "gcc version minor=${GCC_MINOR}")
-				add_definitions("-Wno-implicit-fallthrough")
 			endif()
 		endif()
 	endif()
@@ -98,28 +95,19 @@ elseif (${WIN_OS})
 		"-D_WINSOCK_DEPRECATED_NO_WARNINGS")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} -lpthread")
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
+
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
-	set(CMAKE_SHARED_LINKER_FLAGS "-shared")
 	add_definitions("-Wno-invalid-source-encoding")
-
-	set(LIBRARY_OUTPUT_PATH ${lib_output_path})
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${lib_output_path})
-	link_directories(${lib_output_path})
+	add_executable(rapid_json ${src})
 else()
-#	set(lib_output_path ${PROJECT_BINARY_DIR}/lib)
-	set(lib_output_path ${PROJECT_SOURCE_DIR})
-
-	set(LIBRARY_OUTPUT_PATH ${lib_output_path})
-	add_library(json_static STATIC ${lib_src})
-	SET_TARGET_PROPERTIES(json_static PROPERTIES OUTPUT_NAME "zjson")
+	add_executable(rapid_json ${src})
 
 	if (${WIN_OS})
 		set(CMAKE_SHARED_LINKER_FLAGS "/DYNAMICBASE ws2_32.lib IPHlpApi.lib")
 	endif()
 
-	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${lib_output_path})
 endif()
-
-add_library(zjson SHARED ${lib_src})
 
 ##############################################################################
