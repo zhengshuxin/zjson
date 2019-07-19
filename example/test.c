@@ -34,6 +34,8 @@ static char *load_data(const char *filepath, size_t *size)
 		return NULL;
 	}
 
+	buf[sbuf.st_size] = 0;
+
 	fclose(fp);
 	*size = (size_t) sbuf.st_size;
 	printf("read ok, size=%ld, enter any key to continue ...", sbuf.st_size);
@@ -101,6 +103,7 @@ static void test(const char *filepath)
 	fflush(stdout);
 	getchar();
 
+	if (0)
 	show_json(json);
 
 	printf("Enter any key to call json_free ...");

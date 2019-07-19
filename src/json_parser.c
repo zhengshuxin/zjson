@@ -709,16 +709,18 @@ static struct JSON_STATUS_MACHINE status_tab[] = {
 
 const char* json_update(JSON *json, const char *data)
 {
-	const char *ptr = data;
+	const char *ptr;
 
-	if (data == NULL) {
+	if (data == NULL || *data == 0) {
 		return "";
 	}
 
 	/* 检查是否已经解析完毕 */
 	if (json->finish) {
-		return ptr;
+		return data;
 	}
+
+	ptr = data;
 
 	/* json 解析器状态机循环处理过程 */
 	while (*ptr && !json->finish) {
