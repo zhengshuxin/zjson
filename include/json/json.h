@@ -224,8 +224,7 @@ JSON_API int json_finish(JSON *json);
  * @return {JSON_NODE*} 符合条件的 json 节点, 若返回 NULL 则
  *  表示没有符合条件的 json 节点
  */
-JSON_API JSON_NODE *json_getFirstElementByTagName(
-	JSON *json, const char *tag);
+JSON_API JSON_NODE *json_getFirstElementByTagName(JSON *json, const char *tag);
 
 /**
  * 释放由 json_getElementsByTagName, json_getElementsByName,

@@ -1,5 +1,4 @@
-#include <string.h>
-
+#include "StdAfx.h"
 #include "json/dbuf.h"
 #include "json/vstring.h"
 
