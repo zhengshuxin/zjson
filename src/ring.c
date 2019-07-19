@@ -1,3 +1,5 @@
+#include "StdAfx.h"
+
 #include "json/ring.h"
 
 /* ring_init - initialize ring head */

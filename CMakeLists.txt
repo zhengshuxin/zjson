@@ -95,6 +95,7 @@ if (${UNIX_OS})
 elseif (${WIN_OS})
 	add_definitions(
 		"-Yc"
+		"-D_CRT_SECURE_NO_WARNINGS"
 		"-D_WINSOCK_DEPRECATED_NO_WARNINGS")
 endif()
 

@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <assert.h>
-
+#include "StdAfx.h"
 #include "json/dbuf.h"
 #include "json/vstring.h"
 #include "json/json.h"

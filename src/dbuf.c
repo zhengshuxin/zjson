@@ -1,8 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
+#include "StdAfx.h"
 #include "json/dbuf.h"
 
 typedef struct BLOCK {
@@ -31,7 +27,7 @@ DBUF *dbuf_create(size_t block_size)
 
 #ifdef UNIX
 	page_size = getpagesize();
-#elif defined(WINDOWS)
+#elif defined(_WIN32) || defined(_WIN64)
 	SYSTEM_INFO info;
 
 	memset(&info, 0, sizeof(SYSTEM_INFO));
@@ -389,7 +385,7 @@ void dbuf_test(size_t max)
 			(void) dbuf_alloc(dbuf, len);
 		}
 		printf("alloc over now, sleep(10)\n");
-		sleep(10);
+		//sleep(10);
 		dbuf_destroy(dbuf);
 	}
 }
