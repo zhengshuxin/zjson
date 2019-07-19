@@ -99,7 +99,13 @@ elseif (${WIN_OS})
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/../include")
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/.. -lzjson -Wl,-rpath,${CMAKE_CURRENT_SOURCE_DIR}/..")
+if (${UNIX_OS})
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/.. -lzjson -Wl,-rpath,${CMAKE_CURRENT_SOURCE_DIR}/..")
+elseif (${WIN_OS})
+	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
+	#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/.. -lzjson")
+endif()
+
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
@@ -107,6 +113,7 @@ if (CMAKE_SYSTEM_NAME MATCHES "Android")
 	add_executable(test ${src})
 else()
 	add_executable(test ${src})
+	target_link_libraries(test ${CMAKE_CURRENT_SOURCE_DIR}/../Debug/zjson.lib)
 
 	if (${WIN_OS})
 		set(CMAKE_SHARED_LINKER_FLAGS "/DYNAMICBASE ws2_32.lib IPHlpApi.lib")
