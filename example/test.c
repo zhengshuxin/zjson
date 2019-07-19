@@ -127,7 +127,7 @@ int main(int argc, char *argv[])
 	while ((ch = getopt(argc, argv, "hf:")) > 0) {
 		switch (ch) {
 		case 'h':
-			printf("usage: %s -h [help] -f json_file\r\n", arv[0]);
+			printf("usage: %s -h [help] -f json_file\r\n", argv[0]);
 			return 0;
 		case 'f':
 			snprintf(file, sizeof(file), "%s", optarg);
