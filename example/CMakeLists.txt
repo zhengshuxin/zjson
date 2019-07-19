@@ -114,12 +114,12 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
 	add_definitions("-Wno-invalid-source-encoding")
-	add_executable(test ${src})
+	add_executable(zjson_test ${src})
 else()
-	add_executable(test ${src})
+	add_executable(zjson_test ${src})
 
 	if (${WIN_OS})
-		target_link_libraries(test ${CMAKE_CURRENT_SOURCE_DIR}/../${libpath}/zjson.lib)
+		target_link_libraries(zjson_test ${CMAKE_CURRENT_SOURCE_DIR}/../${libpath}/zjson.lib)
 	endif()
 
 endif()
