@@ -1,13 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 
+project(zjson)
+
 #set(CMAKE_BUILD_TYPE Release)
 #set(CMAKE_BUILD_TYPE Release CACHE STRING "set build type to release")
 
 #message(project_dir=${PROJECT_SOURCE_DIR})
-
-if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-	message(FATAL_ERROR "Please into another dir to build!")
-endif()
 
 #string(TOUPPER ${CMAKE_SYSTEM_NAME} CMAKE_SYSTEM_NAME)
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
@@ -23,6 +21,12 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	set(WIN_OS true)
 else()
 	message(FATAL_ERROR "unknown CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}")
+endif()
+
+if (${UNIX_OS})
+	if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+		message(FATAL_ERROR "Please into another dir to build!")
+	endif()
 endif()
 
 ##############################################################################
@@ -107,7 +111,6 @@ if (CMAKE_SYSTEM_NAME MATCHES "Android")
 	set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${lib_output_path})
 	link_directories(${lib_output_path})
 else()
-#	set(lib_output_path ${PROJECT_BINARY_DIR}/lib)
 	set(lib_output_path ${PROJECT_SOURCE_DIR})
 
 	set(LIBRARY_OUTPUT_PATH ${lib_output_path})

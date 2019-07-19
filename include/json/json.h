@@ -90,8 +90,8 @@ struct JSON {
 	int   status;		/**< 状态机当前解析状态 */
 
 	JSON_NODE *curr_node;	/**< 当前正在处理的 json 节点 */
-	DBUF  *dbuf;	/**< 会话内存池对象 */
-	size_t dbuf_keep;
+	DBUF  *dbuf;		/**< 会话内存池对象 */
+	size_t keep;		/**< 调用 dbuf_reset 时希望保留的内存长度 */
 
 	VSTRING *buf;
 	unsigned char quote;	/**< 非 0 表示 ' 或 " */

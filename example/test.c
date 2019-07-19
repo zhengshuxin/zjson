@@ -118,6 +118,9 @@ int main(int argc, char *argv[])
 	if (argc >= 2) {
 		snprintf(file, sizeof(file), "%s", argv[1]);
 	}
+	else {
+		snprintf(file, sizeof(file), "json.txt");
+	}
 #else
 	char file[128];
 	int  ch;

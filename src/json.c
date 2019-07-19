@@ -252,10 +252,9 @@ JSON *json_alloc(void)
 	json = (JSON*) dbuf_calloc(dbuf, sizeof(JSON));
 
 	json->dbuf = dbuf;
-	json->dbuf_keep = sizeof(JSON);
+	json->keep = sizeof(JSON);
 
-	json->buf = (VSTRING*) dbuf_alloc(dbuf, 128);
-
+	json->buf  = vstring_alloc(dbuf, 128);
 	json->root = json_node_alloc(json);
 	/* 将根节点作为当前节点 */
 	json->curr_node = json->root;
@@ -311,8 +310,8 @@ JSON *json_create(JSON_NODE *node)
 
 	json = (JSON*) dbuf_calloc(dbuf, sizeof(JSON));
 	json->dbuf = dbuf;
-
 	json->root = json_node_alloc(json);
+
 	first = json_node_duplicate(json, node);
 	json_node_add_child(json->root, first);
 
@@ -350,7 +349,7 @@ void json_free(JSON *json)
 
 void json_reset(JSON *json)
 {
-	dbuf_reset(json->dbuf, json->dbuf_keep);
+	dbuf_reset(json->dbuf, json->keep);
 
 	json->root = json_node_alloc(json);
 	json->root->left_ch  = '{';

@@ -721,7 +721,6 @@ const char* json_update(JSON *json, const char *data)
 	}
 
 	/* json 解析器状态机循环处理过程 */
-
 	while (*ptr && !json->finish) {
 		ptr = status_tab[json->status].callback(json, ptr);
 	}

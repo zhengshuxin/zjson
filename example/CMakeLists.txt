@@ -5,11 +5,7 @@ cmake_minimum_required(VERSION 2.8)
 
 #message(project_dir=${PROJECT_SOURCE_DIR})
 
-#project(test)
-
-if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
-	message(FATAL_ERROR "Please into another dir to build!")
-endif()
+project(test)
 
 #string(TOUPPER ${CMAKE_SYSTEM_NAME} CMAKE_SYSTEM_NAME)
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
@@ -25,6 +21,12 @@ elseif (CMAKE_SYSTEM_NAME MATCHES "Windows")
 	set(WIN_OS true)
 else()
 	message(FATAL_ERROR "unknown CMAKE_SYSTEM_NAME=${CMAKE_SYSTEM_NAME}")
+endif()
+
+if (${WIN_OS})
+	if (${CMAKE_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+		message(FATAL_ERROR "Please into another dir to build!")
+	endif()
 endif()
 
 ##############################################################################
@@ -43,10 +45,13 @@ endforeach()
 
 ##############################################################################
 
-if (CMAKE_BUILD_TYPE STREQUAL "")
+#if (xx${CMAKE_BUILD_TYPE} STREQUAL "")
+if (xx${CMAKE_BUILD_TYPE} STREQUAL "xx")
 	set(CMAKE_BUILD_TYPE "DEBUG")
+	set(libpath "Debug")
 else()
 	string(TOUPPER CMAKE_BUILD_TYPE CMAKE_BUILD_TYPE)
+	set(libpath "Release")
 endif()
 
 if (${UNIX_OS})
@@ -103,7 +108,6 @@ if (${UNIX_OS})
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/.. -lzjson -Wl,-rpath,${CMAKE_CURRENT_SOURCE_DIR}/..")
 elseif (${WIN_OS})
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
-	#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/.. -lzjson")
 endif()
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
@@ -113,10 +117,9 @@ if (CMAKE_SYSTEM_NAME MATCHES "Android")
 	add_executable(test ${src})
 else()
 	add_executable(test ${src})
-	target_link_libraries(test ${CMAKE_CURRENT_SOURCE_DIR}/../Debug/zjson.lib)
 
 	if (${WIN_OS})
-		set(CMAKE_SHARED_LINKER_FLAGS "/DYNAMICBASE ws2_32.lib IPHlpApi.lib")
+		target_link_libraries(test ${CMAKE_CURRENT_SOURCE_DIR}/../${libpath}/zjson.lib)
 	endif()
 
 endif()
