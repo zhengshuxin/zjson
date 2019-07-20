@@ -5,15 +5,13 @@
 extern "C" {
 #endif
 
+#include "json_define.h"
 #include "ring.h"
 #include "iterator.h"
 
-#ifndef JSON_API
-#define JSON_API
-#endif
-
 typedef struct DBUF DBUF;
 typedef struct VSTRING VSTRING;
+typedef	struct ARRAY ARRAY;
 typedef struct JSON JSON;
 typedef struct JSON_NODE JSON_NODE;
 
@@ -196,7 +194,51 @@ JSON_API void json_free(JSON *json);
  */
 JSON_API void json_reset(JSON *json);
 
-/*------------------------- in json_parse.c ---------------------------*/
+/**
+ * 从 json 对象中获得第一个与所给标签名相同的 json 节点
+ * @param json {JSON*} json 对象
+ * @param tag {const char*} 标签名称
+ * @return {JSON_NODE*} 符合条件的 json 节点, 若返回 NULL 则
+ *  表示没有符合条件的 json 节点
+ */
+JSON_API JSON_NODE *json_getFirstElementByTagName(JSON *json, const char *tag);
+
+/**
+ * 释放由 json_getElementsByTagName, json_getElementsByName,
+ * 等函数返回的动态数组对象, 因为该动态数组中的
+ * 元素都是 JSON 对象中元素的引用, 所以释放掉该动态数组后, 只要 JSON
+ * 对象不释放, 则原来存于该数组中的元素依然可以使用.
+ * 但并不释放里面的 xml 节点元素
+ * @param a {ARRAY*} 动态数组对象
+ */
+JSON_API void json_free_array(ARRAY *a);
+
+/**
+ * 从 json 对象中获得所有的与所给标签名相同的 json 节点的集合
+ * @param json {JSON*} json 对象
+ * @param tag {const char*} 标签名称
+ * @return {ARRAY*} 符合条件的 json 节点集合, 存于 动态数组中, 若返回 NULL 则
+ *  表示没有符合条件的 json 节点, 非空值需要调用 json_free_array 释放
+ */
+JSON_API ARRAY *json_getElementsByTagName(JSON *json, const char *tag);
+
+/**
+ * 从 json 对象中获得所有的与给定多级标签名相同的 json 节点的集合
+ * @param json {JSON*} json 对象
+ * @param tags {const char*} 多级标签名，由 '/' 分隔各级标签名，如针对 json 数据：
+ *  { 'root': [
+ *      'first': { 'second': { 'third': 'test1' } },
+ *      'first': { 'second': { 'third': 'test2' } },
+ *      'first': { 'second': { 'third': 'test3' } }
+ *    ]
+ *  }
+ *  可以通过多级标签名：root/first/second/third 一次性查出所有符合条件的节点
+ * @return {ARRAY*} 符合条件的 json 节点集合, 存于 动态数组中, 若返回 NULL 则
+ *  表示没有符合条件的 json 节点, 非空值需要调用 json_free_array 释放
+ */
+JSON_API ARRAY *json_getElementsByTags(JSON *json, const char *tags);
+
+/*------------------------- in json_parser.c ---------------------------*/
 
 /**
  * 解析 json 数据, 并持续地自动生成 json 节点树
@@ -215,51 +257,7 @@ JSON_API const char* json_update(JSON *json, const char *data);
  */
 JSON_API int json_finish(JSON *json);
 
-/*------------------------- in json_util.c ----------------------------*/
-
-/**
- * 从 json 对象中获得第一个与所给标签名相同的 json 节点
- * @param json {JSON*} json 对象
- * @param tag {const char*} 标签名称
- * @return {JSON_NODE*} 符合条件的 json 节点, 若返回 NULL 则
- *  表示没有符合条件的 json 节点
- */
-JSON_API JSON_NODE *json_getFirstElementByTagName(JSON *json, const char *tag);
-
-/**
- * 释放由 json_getElementsByTagName, json_getElementsByName,
- * 等函数返回的动态数组对象, 因为该动态数组中的
- * 元素都是 JSON 对象中元素的引用, 所以释放掉该动态数组后, 只要 JSON
- * 对象不释放, 则原来存于该数组中的元素依然可以使用.
- * 但并不释放里面的 xml 节点元素
- * @param a {ARRAY*} 动态数组对象
- */
-//JSON_API void json_free_array(ARRAY *a);
-
-/**
- * 从 json 对象中获得所有的与所给标签名相同的 json 节点的集合
- * @param json {JSON*} json 对象
- * @param tag {const char*} 标签名称
- * @return {ARRAY*} 符合条件的 json 节点集合, 存于 动态数组中, 若返回 NULL 则
- *  表示没有符合条件的 json 节点, 非空值需要调用 json_free_array 释放
- */
-//JSON_API ARRAY *json_getElementsByTagName(JSON *json, const char *tag);
-
-/**
- * 从 json 对象中获得所有的与给定多级标签名相同的 json 节点的集合
- * @param json {JSON*} json 对象
- * @param tags {const char*} 多级标签名，由 '/' 分隔各级标签名，如针对 json 数据：
- *  { 'root': [
- *      'first': { 'second': { 'third': 'test1' } },
- *      'first': { 'second': { 'third': 'test2' } },
- *      'first': { 'second': { 'third': 'test3' } }
- *    ]
- *  }
- *  可以通过多级标签名：root/first/second/third 一次性查出所有符合条件的节点
- * @return {ARRAY*} 符合条件的 json 节点集合, 存于 动态数组中, 若返回 NULL 则
- *  表示没有符合条件的 json 节点, 非空值需要调用 json_free_array 释放
- */
-//JSON_API ARRAY *json_getElementsByTags(JSON *json, const char *tags);
+/*------------------------- in json_builder.c ----------------------------*/
 
 /**
  * 构建 json 对象时创建 json 叶节点

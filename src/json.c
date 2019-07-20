@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "json/dbuf.h"
 #include "json/vstring.h"
+#include "json/array.h"
 #include "json/json.h"
 
 #define	LEN	VSTRING_LEN
@@ -361,4 +362,111 @@ void json_reset(JSON *json)
 	json->status    = JSON_S_ROOT;
 	json->finish    = 0;
 	json->depth     = 0;
+}
+
+JSON_NODE *json_getFirstElementByTagName(JSON *json, const char *tag)
+{
+	ITER iter;
+
+	foreach(iter, json) {
+		JSON_NODE *node = (JSON_NODE*) iter.data;
+		if (strcasecmp(tag, STR(node->ltag)) == 0) {
+			return node;
+		}
+	}
+
+	return NULL;
+}
+
+void json_free_array(ARRAY *a)
+{
+	array_free(a, NULL);
+}
+
+ARRAY *json_getElementsByTagName(JSON *json, const char *tag)
+{
+	ITER iter;
+	ARRAY *a = array_create(10);
+
+	foreach(iter, json) {
+		JSON_NODE *node = (JSON_NODE*) iter.data;
+		if (strcasecmp(tag, STR(node->ltag)) == 0) {
+			array_append(a, node);
+		}
+	}
+
+	if (array_size(a) == 0) {
+		array_free(a, NULL);
+		return NULL;
+	}
+
+	return a;
+}
+
+ARRAY *json_getElementsByTags(JSON *json, const char *tags)
+{
+	int   i;
+	ITER iter;
+	ARRAY *tokens, *a, *result;
+	JSON_NODE *node_saved, *node;
+	char *buf = strdup(tags), *slash, *ptr;
+
+	ptr = buf;
+	tokens = array_create(10);
+	while (*ptr) {
+		slash = strchr(ptr, '/');
+		if (slash) {
+			*slash++ = 0;
+			array_append(tokens, ptr);
+			ptr = slash;
+		} else {
+			array_append(tokens, ptr);
+			break;
+		}
+	}
+
+	i = array_size(tokens);
+	ptr = (char*) array_index(tokens, i - 1);
+	a = json_getElementsByTagName(json, ptr);
+	if (a == NULL) {
+		array_free(tokens, NULL);
+		free(buf);
+		return (NULL);
+	}
+
+	result = array_create(array_size(a));
+
+#define	NEQ(x, y) strcasecmp((x), (y))
+
+	foreach(iter, a) {
+		node = (JSON_NODE*) iter.data;
+		node_saved = node;
+		i = array_size(tokens);
+		while (i >= 0 && node->parent != NULL) {
+			ptr = (char*) array_index(tokens, i);
+			if (node->left_ch != 0) {
+				node = node->parent;
+			} else if (NEQ(ptr, "*") && NEQ(ptr, STR(node->ltag))) {
+
+				break;
+			} else {
+				i--;
+				node = node->parent;
+			}
+		}
+		if (i == -1) {
+			array_append(result, node_saved);
+		}
+	}
+
+	json_free_array(a);
+	array_free(tokens, NULL);
+	free(buf);
+
+	if (array_size(result) == 0) {
+		array_free(result, NULL);
+		result = NULL;
+	}
+
+	return result;
 }

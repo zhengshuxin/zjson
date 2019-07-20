@@ -1,5 +1,5 @@
 all:
-	@(mkdir build; cd build; cmake ..; make)
+	@(mkdir -p build; cd build; cmake ..; make)
 clean cl:
 	@(rm -rf build)
 	@(rm -f test)
