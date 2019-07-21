@@ -16,14 +16,15 @@ typedef struct JSON JSON;
 typedef struct JSON_NODE JSON_NODE;
 
 struct JSON_NODE {
-	VSTRING   *ltag;	/**< 标签名 */
-	VSTRING   *text;	/**< 当节点为叶节点时该文本内容非空 */
-	JSON_NODE *tag_node;	/**< 当标签值为 json 节点时此项非空 */
-	JSON_NODE *parent;	/**< 父节点 */
-	RING       children;	/**< 子节点集合 */
-	RING       node;	/**< 当前节点 */
-	unsigned int   depth;	/**< 当前节点的深度 */
-	unsigned short type;	/**< 节点类型 */
+	VSTRING   *ltag;		/**< 标签名 */
+	VSTRING   *text;		/**< 当节点为叶节点时该文本内容非空 */
+	JSON_NODE *tag_node;		/**< 当标签值为 json 节点时此项非空 */
+	JSON_NODE *parent;		/**< 父节点 */
+	RING       children;		/**< 子节点集合 */
+	RING       node;		/**< 当前节点 */
+	unsigned int   depth:30;	/**< 当前节点的深度 */
+	unsigned int   quoted:1;	/**< 该节点是否被引号包含 */
+	unsigned short type;		/**< 节点类型 */
 #define	JSON_T_A_STRING      (1 << 0)
 #define	JSON_T_A_NUMBER      (1 << 1)
 #define	JSON_T_A_BOOL        (1 << 2)
@@ -43,7 +44,6 @@ struct JSON_NODE {
 #define JSON_T_PAIR          (1 << 14)
 #define	JSON_T_ELEMENT       (1 << 15)
 
-	/* private */
 	unsigned char left_ch;	/**< 本节点的第一个字符: { or [ */
 	unsigned char right_ch;	/**< 本节点的最后一个字符: } or ] */
 };
@@ -98,6 +98,19 @@ struct JSON {
 };
 
 /*----------------------------- in json.c -----------------------------*/
+
+/**
+ * 将 Json 节点的整形值转为字符串描述
+ * @param type {unsigned short}
+ * @return {const char*}
+ */
+JSON_API const char *json_node_type(unsigned short type);
+JSON_API int json_node_is_string(unsigned short type);
+JSON_API int json_node_is_number(unsigned short type);
+JSON_API int json_node_is_bool(unsigned short type);
+JSON_API int json_node_is_null(unsigned short type);
+JSON_API int json_node_is_obj(unsigned short type);
+JSON_API int json_node_is_array(unsigned short type);
 
 /**
  * 创建一个 json 节点

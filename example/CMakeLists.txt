@@ -104,9 +104,8 @@ elseif (${WIN_OS})
 endif()
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -I${CMAKE_CURRENT_SOURCE_DIR}/../include")
-if (${UNIX_OS})
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -L${CMAKE_CURRENT_SOURCE_DIR}/.. -lzjson -Wl,-rpath,${CMAKE_CURRENT_SOURCE_DIR}/..")
-elseif (${WIN_OS})
+
+if (${WIN_OS})
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 endif()
 
@@ -114,12 +113,14 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 
 if (CMAKE_SYSTEM_NAME MATCHES "Android")
 	add_definitions("-Wno-invalid-source-encoding")
-	add_executable(zjson_test ${src})
+	add_executable(json_test ${src})
 else()
-	add_executable(zjson_test ${src})
+	add_executable(json_test ${src})
 
-	if (${WIN_OS})
-		target_link_libraries(zjson_test ${CMAKE_CURRENT_SOURCE_DIR}/../${libpath}/zjson.lib)
+	if (${UNIX_OS})
+		target_link_libraries(json_test ${CMAKE_CURRENT_SOURCE_DIR}/../libzjson.a)
+	elseif (${WIN_OS})
+		target_link_libraries(json_test ${CMAKE_CURRENT_SOURCE_DIR}/../${libpath}/zjson.lib)
 	endif()
 
 endif()

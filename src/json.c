@@ -7,6 +7,56 @@
 #define	LEN	VSTRING_LEN
 #define	STR	VSTRING_STR
 
+const char *json_node_type(unsigned short type)
+{
+	if (json_node_is_string(type)) {
+		return "string";
+	} else if (json_node_is_number(type)) {
+		return "number";
+	} else if (json_node_is_bool(type)) {
+		return "bool";
+	} else if (json_node_is_null(type)) {
+		return "null";
+	} else if (json_node_is_obj(type)) {
+		return "obj";
+	} else if (json_node_is_array(type)) {
+		return "array";
+	} else {
+		return "unknown";
+	}
+}
+
+int json_node_is_string(unsigned short type)
+{
+	return (type & JSON_T_A_STRING) || (type & JSON_T_STRING);
+}
+
+int json_node_is_number(unsigned short type)
+{
+	return  (type & JSON_T_A_DOUBLE) || (type & JSON_T_DOUBLE) ||
+		(type & JSON_T_A_NUMBER) || (type & JSON_T_NUMBER);
+}
+
+int json_node_is_bool(unsigned short type)
+{
+	return (type & JSON_T_A_BOOL) || (type & JSON_T_BOOL);
+}
+
+int json_node_is_null(unsigned short type)
+{
+	return (type & JSON_T_A_NULL) || (type & JSON_T_NULL);
+}
+
+int json_node_is_obj(unsigned short type)
+{
+	return (type & JSON_T_OBJ);
+}
+
+int json_node_is_array(unsigned short type)
+{
+	return (type & JSON_T_ARRAY);
+}
+
 JSON_NODE *json_node_alloc(JSON *json)
 {
 	JSON_NODE *node;

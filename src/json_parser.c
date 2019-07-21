@@ -472,14 +472,16 @@ static const char *json_string(JSON *json, const char *data)
 					json->backslash = 1;
 				}
 			} else if (ch == json->quote) {
-				/* 对节点的值，必须保留该 quote 值，以便于区分
-				 * 不同的值类型：bool, null, number, string
-				 * json->quote = 0;
+				/* 对节点的值，设置标志位，表明该节点值是由引
+				 * 号包含起来，以便于区分 bool, null, number,
+				 * string 类型
 				 */
+				node->quoted    = 1;
+				json->quote     = 0;
+				json->part_word = 0;
 
 				/* 切换至查询该节点的兄弟节点的过程 */
-				json->status    = JSON_S_STREND;
-				json->part_word = 0;
+				json->status = JSON_S_STREND;
 				data++;
 				break;
 			}
@@ -564,7 +566,7 @@ static const char *json_strend(JSON *json, const char *data)
 			&& *((x) + 1) != 0 && is_alldig((x) + 1)))
 
 	if (node->parent && node->parent->type == JSON_T_ARRAY) {
-		if (json->quote == 0) {
+		if (node->quoted == 0) {
 			const char* txt = (const char*) STR(node->text);
 
 			if (EQ(txt, "null")) {
@@ -581,7 +583,7 @@ static const char *json_strend(JSON *json, const char *data)
 		} else {
 			node->type = JSON_T_A_STRING | JSON_T_LEAF;
 		}
-	} else if (json->quote == 0) {
+	} else if (node->quoted == 0) {
 		const char* txt = (const char*) STR(node->text);
 
 		if (EQ(txt, "null")) {

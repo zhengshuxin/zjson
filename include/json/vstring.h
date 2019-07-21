@@ -16,10 +16,10 @@ struct VSTRING {
 	unsigned cnt;
 };
 
-#define VSTRING_STR(vp) ((vp)->buf)
-#define VSTRING_LEN(vp) ((vp)->cnt)
+#define VSTRING_STR(vp) ((vp) ? ((vp)->buf) : "")
+#define VSTRING_LEN(vp) ((vp) ? ((vp)->cnt) : 0)
 
-#define VSTRING_RESET(vp) ((vp)->cnt = 0)
+#define VSTRING_RESET(vp) do { if ((vp)) { ((vp)->cnt = 0); } } while (0)
 
 VSTRING *vstring_alloc(DBUF *dbuf, size_t len);
 VSTRING *vstring_strcpy(DBUF *dbuf, VSTRING *to, const char *s);
