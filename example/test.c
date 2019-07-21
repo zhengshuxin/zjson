@@ -69,7 +69,6 @@ static void show_json(JSON *json)
 		return;
 	}
 
-
 	printf("--------------------------------------------\r\n");
 	foreach(it, json) {
 		JSON_NODE *node = it.data;
@@ -109,7 +108,6 @@ static void test(void)
 {
 	JSON *json = json_alloc();
 	json_update(json, json_data);
-
 
 	if (json_finish(json)) {
 		printf("json parsing ok!\r\n");

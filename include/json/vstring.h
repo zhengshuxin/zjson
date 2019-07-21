@@ -28,7 +28,7 @@ VSTRING *vstring_memcat(DBUF *dbuf, VSTRING *to, const char *s, size_t len);
 
 #define VSTRING_EXTEND(dp, vp, inc) do { \
 	char *_buf_;  \
-	(vp)->len += inc;  \
+	(vp)->len += inc > 16 ? inc : 16;  \
 	_buf_ = (char*) dbuf_alloc((dp), (vp)->len);  \
 	memcpy(_buf_,  (vp)->buf, (vp)->cnt);  \
 	(vp)->buf = _buf_;  \
@@ -46,9 +46,9 @@ VSTRING *vstring_memcat(DBUF *dbuf, VSTRING *to, const char *s, size_t len);
 
 #define VSTRING_TERMINATE(dp, vp) do {  \
 	if ((vp)->cnt + 1 > (vp)->len) {  \
-		VSTRING_EXTEND(dp, vp, (vp)->len);  \
+		VSTRING_EXTEND(dp, vp, (vp)->cnt + 1 - (vp)->len);  \
 	}  \
-	(vp)->buf[(vp)->cnt + 1] = 0;  \
+	(vp)->buf[(vp)->cnt] = 0;  \
 } while (0)
 
 #ifdef __cplusplus

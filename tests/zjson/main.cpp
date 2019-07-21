@@ -62,7 +62,8 @@ static void dump_data(const char *filepath, const char *data, size_t len)
 	}
 
 	if (fwrite(data, len, 1, fp) != 1) {
-		printf("fwrite to %s error %s\r\n", filepath, strerror(errno));
+		printf("fwrite to %s error %s, len=%ld\r\n",
+			filepath, strerror(errno), len);
 	}
 	fclose(fp);
 }
