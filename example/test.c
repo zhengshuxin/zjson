@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "json/vstring.h"
+#include "json/array.h"
 #include "json/json.h"
 
 #if 1
@@ -9,26 +10,30 @@ static const char* json_data = \
     "    'value{': 'File',\r\n"
     "    'popup{}': {\r\n"
     "        'menuitem1}': [\r\n"
-    "            {'value': 'New', 'onclick': 'CreateNewDoc()'},\r\n"
-    "            {'value': 'Open', 'onclick': 'OpenDoc()'},\r\n"
-    "            {'value': 'Close', 'onclick': 'CloseDoc()'}\r\n"
+    "            {'value': 'New1', 'onclick': 'CreateNewDoc()'},\r\n"
+    "            {'value': 'Open1', 'onclick': 'OpenDoc()'},\r\n"
+    "            {'value': 'Close1', 'onclick': 'CloseDoc()'}\r\n"
     "        ],\r\n"
     "        'menuname[]': 'hello world',\r\n"
     "        'inner': { 'value' : 'new ', 'value' : 'open' },\r\n"
     "        'menuitem2': [\r\n"
-    "            {'value': 'New', 'onclick': 'CreateNewDoc()'},\r\n"
-    "            {'value': 'Open', 'onclick': 'OpenDoc()'},\r\n"
-    "            {'value': 'Close', 'onclick': 'CloseDoc()'},\r\n"
-    "            {{'value': 'Help', 'onclick': 'Help()'}}"
+    "            {'value': 'New2', 'onclick': 'CreateNewDoc()'},\r\n"
+    "            {'value': 'Open2', 'onclick': 'OpenDoc()'},\r\n"
+    "            {'value': 'Close2', 'onclick': 'CloseDoc()'},\r\n"
+    "            {{'value': 'Help2', 'onclick': 'Help()'}}"
     "        ]\r\n"
     "    }\r\n"
     " }\r\n,"
     " 'help': 'hello world!',\r\n"
+    " 'bool': ture,\r\n"
+    " 'double-number': 3.14,\r\n"
+    " 'inter-number': 3000,\r\n"
+    " 'null': null,\r\n"
     " 'menuitem2': [\r\n"
-    "   {'value': 'New', 'onclick': 'CreateNewDoc()'},\r\n"
-    "   {'value': 'Open', 'onclick': 'OpenDoc()'},\r\n"
-    "   {'value': 'Close', 'onclick': 'CloseDoc()'},\r\n"
-    "   [{'value': 'Save', 'onclick': 'SaveDoc()'}]"
+    "   {'value': 'New3', 'onclick': 'CreateNewDoc()'},\r\n"
+    "   {'value': 'Open3', 'onclick': 'OpenDoc()'},\r\n"
+    "   {'value': 'Close3', 'onclick': 'CloseDoc()'},\r\n"
+    "   [{'value': 'Save3, 'onclick': 'SaveDoc()'}]"
     " ]\r\n"
     "}\r\n"
     "{ 'hello world' }\r\n";
@@ -55,27 +60,46 @@ static void show_json(JSON *json)
 {
 	VSTRING *buf = json_build(json);
 	const char *filepath = "dump.txt";
+	ARRAY *a;
+	ITER it;
+	RING_ITER rit;
 
 	if (!buf) {
 		printf("json_build failed!\r\n");
 		return;
 	}
 
-	if (VSTRING_LEN(buf) < 102400) {
-		ITER it;
 
-		printf("--------------------------------------------\r\n");
-		foreach(it, json) {
-			JSON_NODE *node = it.data;
-			printf("tag=%s, type=%s, %d\r\n", node->ltag ?
-			      	VSTRING_STR(node->ltag) : "none",
-				json_node_type(node->type), node->type);
+	printf("--------------------------------------------\r\n");
+	foreach(it, json) {
+		JSON_NODE *node = it.data;
+		printf("tag=%s, type=%s, %d\r\n", node->ltag ?
+			VSTRING_STR(node->ltag) : "none",
+			json_node_type(node->type), node->type);
+	}
+
+	printf("--------------------------------------------\r\n");
+	printf("%s\r\n", VSTRING_STR(buf));
+
+	printf("--------------------------------------------\r\n");
+	ring_foreach(rit, &json->root->children) {
+		JSON_NODE *node = ring_to_appl(rit.ptr, JSON_NODE, node);
+		printf("tag: %s, type: %s\r\n", VSTRING_STR(node->ltag),
+			json_node_type(node->type));
+	}
+
+	printf("--------------------------------------------\r\n");
+	a = json_getElementsByTags(json, "menuitem2/value");
+	if (a) {
+		foreach(it, a) {
+			JSON_NODE *node = (JSON_NODE*) it.data;
+			printf("tag: %s, type: %s, value=%s\r\n",
+				VSTRING_STR(node->ltag),
+				json_node_type(node->type),
+				VSTRING_STR(node->text));
 		}
 
-		printf("--------------------------------------------\r\n");
-		printf("%s\r\n", VSTRING_STR(buf));
-	} else {
-		printf("json too large %d\r\n", VSTRING_LEN(buf));
+		json_free_array(a);
 	}
 
 	dump_data(filepath, VSTRING_STR(buf), VSTRING_LEN(buf));

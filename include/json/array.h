@@ -16,7 +16,7 @@ typedef	struct ARRAY ARRAY;
 struct ARRAY{
 	int     capacity;	/**< items 数组空间大小 */
 	int     count;		/**< items 中含有元素的个数 */
-	void    **items;	/**< 动态数组 */
+	void  **items;		/**< 动态数组 */
 
 	/* for iterator */
 

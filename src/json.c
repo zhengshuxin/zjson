@@ -491,20 +491,19 @@ ARRAY *json_getElementsByTags(JSON *json, const char *tags)
 	foreach(iter, a) {
 		node = (JSON_NODE*) iter.data;
 		node_saved = node;
-		i = array_size(tokens);
+		i = array_size(tokens) - 1;
 		while (i >= 0 && node->parent != NULL) {
 			ptr = (char*) array_index(tokens, i);
 			if (node->left_ch != 0) {
 				node = node->parent;
 			} else if (NEQ(ptr, "*") && NEQ(ptr, STR(node->ltag))) {
-
 				break;
 			} else {
-				i--;
 				node = node->parent;
+				i--;
 			}
 		}
-		if (i == -1) {
+		if (i < 0) {
 			array_append(result, node_saved);
 		}
 	}

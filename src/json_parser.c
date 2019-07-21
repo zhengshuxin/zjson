@@ -392,9 +392,11 @@ static const char *json_value(JSON *json, const char *data)
 	if (*data == '{') {
 		data++;
 		json->status = JSON_S_OBJ;
+		json->curr_node->type = JSON_T_OBJ;
 	} else if (*data == '[') {
 		data++;
 		json->status = JSON_S_ARRAY;
+		json->curr_node->type = JSON_T_ARRAY;
 	}
 
 	/* 兼容一下有些数据格式为 "xxx: ," 的方式 */
@@ -409,11 +411,12 @@ static const char *json_value(JSON *json, const char *data)
 	else if (IS_QUOTE(*data)) {
 		json->quote  = *data++;
 		json->status = JSON_S_STRING;
+		json->curr_node->type = JSON_T_STRING;
 	} else {
 		json->status = JSON_S_STRING;
+		json->curr_node->type = JSON_T_STRING;
 	}
 
-	json->curr_node->type = JSON_T_LEAF;
 	return data;
 }
 
